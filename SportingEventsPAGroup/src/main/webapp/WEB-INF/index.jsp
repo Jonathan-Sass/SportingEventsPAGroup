@@ -25,8 +25,8 @@
 <body>
 	<div class="container w-75 m-auto">
 		<div class="m-2">
-			<h1 class="text-primary">Welcome, House Hunter!</h1>
-			<h4>A place for hunting houses.</h4>
+			<h1 class="text-primary">iSport</h1>
+			<h4>Free Pickup Game Finder and Organizer</h4>
 		</div>
 	</div>
 		<div class="container w-75 m-auto d-flex justify-content-evenly">
@@ -58,6 +58,11 @@
 			                <form:label path="confirm">Confirm Password:</form:label>
 			                <form:errors class="text-danger" path="confirm" />
 			                <form:input class="w-100" type="password" path="confirm" />
+			            </p>
+			            <p>
+			                <form:label path="birthdate">Birthdate:</form:label>
+			                <form:errors class="text-danger" path="birthdate" />
+			                <form:input class="w-100" type="date" path="confirm" />
 			            </p>
 			            <input class="btn btn-primary btn-sm" type="submit" value="Submit" />
 	        		</form:form>
