@@ -5,10 +5,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.jsass.sportingeventspagroup.models.*;
-import com.jsass.sportingeventspagroup.services.*;
+import com.jsass.sportingeventspagroup.models.Event;
+import com.jsass.sportingeventspagroup.models.User;
+import com.jsass.sportingeventspagroup.services.EventService;
 
-import java.security.Principal;
+import jakarta.servlet.http.HttpSession;
 import java.util.Optional;
 
 @Controller
@@ -16,9 +17,6 @@ import java.util.Optional;
 public class EventController {
     @Autowired
     private EventService eventService;
-
-    @Autowired
-    private UserService userService;
 
     @GetMapping
     public String listEvents(Model model) {
@@ -36,16 +34,16 @@ public class EventController {
     @GetMapping("/new")
     public String showEventForm(Model model) {
         model.addAttribute("event", new Event());
-        return "createEvent";
+        return "createEvent"; // Ensure this matches your view name
     }
 
     @PostMapping("/create")
-    public String createEvent(@ModelAttribute("event") Event event, Principal principal) {
-        if (principal != null) {
-            Optional<User> user = userService.findUserByEmail(principal.getName());
-            user.ifPresent(event::setCreator);
+    public String createEvent(@ModelAttribute("event") Event event, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser != null) {
+            event.setCreator(loggedInUser);
+            eventService.saveEvent(event);
         }
-        eventService.saveEvent(event);
         return "redirect:/events";
     }
 
@@ -57,14 +55,17 @@ public class EventController {
     }
 
     @PostMapping("/{id}/update")
-    public String updateEvent(@PathVariable Long id, @ModelAttribute("event") Event event) {
-        Optional<Event> existingEvent = eventService.findEventById(id);
-        existingEvent.ifPresent(value -> {
-            value.setName(event.getName());
-            value.setLocation(event.getLocation());
-            value.setDate(event.getDate());
-            eventService.saveEvent(value);
-        });
+    public String updateEvent(@PathVariable Long id, @ModelAttribute("event") Event event, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser != null) {
+            Optional<Event> existingEvent = eventService.findEventById(id);
+            existingEvent.ifPresent(value -> {
+                value.setName(event.getName());
+                value.setLocation(event.getLocation());
+                value.setDate(event.getDate());
+                eventService.saveEvent(value);
+            });
+        }
         return "redirect:/events/" + id;
     }
 
@@ -75,15 +76,13 @@ public class EventController {
     }
 
     @GetMapping("/{id}/join")
-    public String joinEvent(@PathVariable Long id, Principal principal) {
-        if (principal != null) {
-            Optional<User> user = userService.findUserByEmail(principal.getName());
-            Optional<Event> event = eventService.findEventById(id);
-            if (user.isPresent() && event.isPresent()) {
-                Event currentEvent = event.get();
-                currentEvent.getAttendees().add(user.get());
-                eventService.saveEvent(currentEvent);
-            }
+    public String joinEvent(@PathVariable Long id, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        Optional<Event> event = eventService.findEventById(id);
+        if (loggedInUser != null && event.isPresent()) {
+            Event currentEvent = event.get();
+            currentEvent.getAttendees().add(loggedInUser);
+            eventService.saveEvent(currentEvent);
         }
         return "redirect:/events/" + id;
     }

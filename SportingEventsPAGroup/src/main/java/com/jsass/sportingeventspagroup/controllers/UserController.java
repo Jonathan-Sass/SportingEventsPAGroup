@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
+import jakarta.servlet.http.HttpSession;
 import java.util.Optional;
 
 @Controller
@@ -21,6 +21,7 @@ public class UserController {
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("newUser", new User());
+        model.addAttribute("newLogin", new User());
         return "index"; // Logical view name
     }
 
@@ -28,6 +29,8 @@ public class UserController {
     public String registerUser(@ModelAttribute("newUser") User user, Model model) {
         if (userService.isEmailTaken(user.getEmail())) {
             model.addAttribute("emailError", "Email is already taken");
+            model.addAttribute("newUser", new User());
+            model.addAttribute("newLogin", new User());
             return "index";
         }
         userService.saveUser(user);
@@ -37,42 +40,58 @@ public class UserController {
     @GetMapping("/login")
     public String showLoginForm(Model model) {
         model.addAttribute("newLogin", new User());
+        model.addAttribute("newUser", new User());
         return "index"; // Logical view name
     }
 
     @PostMapping("/login")
-    public String loginUser(@ModelAttribute("newLogin") User user, Model model) {
+    public String loginUser(@ModelAttribute("newLogin") User user, Model model, HttpSession session) {
         Optional<User> existingUser = userService.findUserByEmail(user.getEmail());
         if (existingUser.isPresent() && userService.checkPassword(user.getPassword(), existingUser.get().getPassword())) {
-            model.addAttribute("user", existingUser.get());
-            return "redirect:/dashboard";
+            session.setAttribute("loggedInUser", existingUser.get());
+            return "redirect:/users/dashboard";
         }
         model.addAttribute("loginError", "Invalid email or password");
+        model.addAttribute("newLogin", new User());
+        model.addAttribute("newUser", new User());
         return "index";
     }
 
-    @GetMapping("/profile")
-    public String userProfile(Principal principal, Model model) {
-        if (principal != null) {
-            Optional<User> user = userService.findUserByEmail(principal.getName());
-            user.ifPresent(value -> model.addAttribute("user", value));
+    @GetMapping("/dashboard")
+    public String showDashboard(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user != null) {
+            model.addAttribute("user", user);
+            return "dashboard"; // Logical view name
         }
-        return "userAccount"; // Logical view name
+        return "redirect:/users/login";
+    }
+
+    @GetMapping("/profile")
+    public String userProfile(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user != null) {
+            model.addAttribute("user", user);
+            return "userAccount"; // Logical view name
+        }
+        return "redirect:/users/login";
     }
 
     @GetMapping("/edit")
-    public String editUserForm(Principal principal, Model model) {
-        if (principal != null) {
-            Optional<User> user = userService.findUserByEmail(principal.getName());
-            user.ifPresent(value -> model.addAttribute("user", value));
+    public String editUserForm(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user != null) {
+            model.addAttribute("user", user);
+            return "editUser"; // Logical view name
         }
-        return "editUser"; // Logical view name
+        return "redirect:/users/login";
     }
 
     @PostMapping("/update")
-    public String updateUser(@ModelAttribute("user") User user, Principal principal) {
-        if (principal != null) {
-            Optional<User> existingUser = userService.findUserByEmail(principal.getName());
+    public String updateUser(@ModelAttribute("user") User user, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser != null) {
+            Optional<User> existingUser = userService.findUserByEmail(loggedInUser.getEmail());
             existingUser.ifPresent(value -> {
                 value.setFirstName(user.getFirstName());
                 value.setLastName(user.getLastName());
@@ -82,10 +101,16 @@ public class UserController {
                     value.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
                 }
                 userService.saveUser(value);
+                session.setAttribute("loggedInUser", value); // Update session user
             });
+            return "redirect:/users/profile";
         }
-        return "redirect:/users/profile";
+        return "redirect:/users/login";
     }
 
-    // Additional methods can go here
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // Invalidate the session
+        return "redirect:/users/login";
+    }
 }
