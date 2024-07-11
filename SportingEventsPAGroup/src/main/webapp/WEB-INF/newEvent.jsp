@@ -11,7 +11,7 @@
 	<html data-bs-theme="dark">
 	<head>
 	    <meta charset="UTF-8">
-	    <title>Event Information</title>
+	    <title>Create An Event</title>
 	   	<link
 	    	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
 	    	rel="stylesheet"
@@ -34,7 +34,7 @@
 							<a class="nav-link active" aria-current="page" href="/events/">Home</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="/events/new/">New</a>
+							<a class="nav-link" href="/events/new">New</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="/events/search">Search</a>
@@ -46,40 +46,32 @@
 				</div>
 			</div>
 		</nav>
-		<div class="card shadow p-2">
+		<div class="card shadow w-75 p-2 m-auto">
 			<div class="card-title">
-				<h1><c:out value="${event.name}"/></h1>
-			</div>
-   			<div class="card-body">
-   				<div class="d-flex justify-content-between align-items-center p-2 my-4 gap-2">
-   					<div class="d-flex flex-3 flex-column">
-   						<ul class="nav nav-tabs">
-							<li class="nav-item">
-								<a class="nav-link active" aria-current="page" href="#">Event Date</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="#">Information</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="#">Users</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link disabled" aria-disabled="true">Disabled</a>
-							</li>
-						</ul>
-   					</div>
-   					<div class="d-flex flex-2">
-   						<img href="/static/images/map.jpg"/>
-   					</div>
-  					</div>
-  					<div class="border border-primary border-2">
-  						<h4>Messages:</h4>
-  						<c:forEach var="message" items="${event.messages}">
-  							<p>${message.author}: ${message.content}</p>
-  						</c:forEach>
-				</div>
-			</div>
-		</div>
+				<h3>Create a New Event</h3>
+		   			<div class="card-body">
+		   				<form:form action="/listings/create" method="post" modelAttribute="listing">
+		   					<input type="hidden" path="id" value="${user.id}"/>
+		   					<div>
+		   						<form:label path="name">Name: </form:label>
+		   						<form:errors class="text-danger" path="name"/>
+		   						<form:input class= "w-100" path="name"/>
+	   						</div>
+	   						<div>
+		   						<form:label path="location">Location: </form:label>
+		   						<form:errors class="text-danger" path="location"/>
+		   						<form:input class= "w-100" path="location"/>
+	   						</div>
+	   						<div>
+		   						<form:label path="date">Date: </form:label>
+		   						<form:errors class="text-danger" path="date"/>
+		   						<form:input class= "w-100" path="date"/>
+	   						</div>
+	   						<input type="submit" class="btn btn-primary w-100" value="Create Event"/>
+		   				</form:form>
+		   			</div>
+		   		</div>
+	   		</div>
 	</body>
 	</html>
 	

@@ -34,10 +34,10 @@
 							<a class="nav-link active" aria-current="page" href="#">Home</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#">New</a>
+							<a class="nav-link" href="/events/new">New</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#">Search</a>
+							<a class="nav-link" href="/events/search">Search</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link disabled" aria-disabled="true">Disabled</a>
