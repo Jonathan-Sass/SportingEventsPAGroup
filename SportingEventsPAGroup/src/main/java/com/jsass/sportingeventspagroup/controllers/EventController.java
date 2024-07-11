@@ -1,11 +1,12 @@
-package com.jsass.controllers;
+package com.jsass.sportingeventspagroup.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import com.jsass.models.*;
-import com.jsass.services.*;
+
+import com.jsass.sportingeventspagroup.models.*;
+import com.jsass.sportingeventspagroup.services.*;
 
 import java.security.Principal;
 import java.util.Optional;

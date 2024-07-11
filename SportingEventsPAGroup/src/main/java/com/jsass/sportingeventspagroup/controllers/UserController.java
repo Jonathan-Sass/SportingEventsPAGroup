@@ -1,6 +1,7 @@
-package com.jsass.controllers;
-import com.jsass.models.*;
-import com.jsass.services.*;
+package com.jsass.sportingeventspagroup.controllers;
+
+import com.jsass.sportingeventspagroup.models.User;
+import com.jsass.sportingeventspagroup.services.UserService;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class UserController {
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("newUser", new User());
-        return "index"; // Use the same JSP for login and register
+        return "index"; // Logical view name
     }
 
     @PostMapping("/register")
@@ -30,13 +31,13 @@ public class UserController {
             return "index";
         }
         userService.saveUser(user);
-        return "redirect:/login";
+        return "redirect:/users/login";
     }
 
     @GetMapping("/login")
     public String showLoginForm(Model model) {
         model.addAttribute("newLogin", new User());
-        return "index"; // Use the same JSP for login and register
+        return "index"; // Logical view name
     }
 
     @PostMapping("/login")
@@ -56,7 +57,7 @@ public class UserController {
             Optional<User> user = userService.findUserByEmail(principal.getName());
             user.ifPresent(value -> model.addAttribute("user", value));
         }
-        return "userAccount";
+        return "userAccount"; // Logical view name
     }
 
     @GetMapping("/edit")
@@ -65,7 +66,7 @@ public class UserController {
             Optional<User> user = userService.findUserByEmail(principal.getName());
             user.ifPresent(value -> model.addAttribute("user", value));
         }
-        return "editUser";
+        return "editUser"; // Logical view name
     }
 
     @PostMapping("/update")

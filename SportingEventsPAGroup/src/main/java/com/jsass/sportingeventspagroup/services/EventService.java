@@ -1,9 +1,11 @@
-package com.jsass.services;
+package com.jsass.sportingeventspagroup.services;
 
-import com.jsass.repositories.*;
+import com.jsass.sportingeventspagroup.models.*;
+import com.jsass.sportingeventspagroup.repositories.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.jsass.models.*;
+
 import java.util.List;
 import java.util.Optional;
 

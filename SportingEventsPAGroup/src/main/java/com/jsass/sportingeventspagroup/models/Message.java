@@ -1,4 +1,4 @@
-package com.jsass.models;
+package com.jsass.sportingeventspagroup.models;
 
 
 import jakarta.persistence.*;

@@ -1,4 +1,4 @@
-package com.jsass.models;
+package com.jsass.sportingeventspagroup.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -26,11 +26,16 @@ public class User {
     @Size(min = 8, message = "Password should be at least 8 characters")
     private String password;
 
+    @Transient
+    @Size(min = 8, message = "Password confirmation should be at least 8 characters")
+    private String confirm;
+
     private LocalDate birthdate;
 
     @OneToMany(mappedBy = "creator")
     private List<Event> events;
 
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -69,6 +74,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getConfirm() {
+        return confirm;
+    }
+
+    public void setConfirm(String confirm) {
+        this.confirm = confirm;
     }
 
     public LocalDate getBirthdate() {
