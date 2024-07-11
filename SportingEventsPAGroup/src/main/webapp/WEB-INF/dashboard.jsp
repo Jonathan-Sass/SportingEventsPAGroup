@@ -74,12 +74,40 @@
 	  			</thead>
 	  			<tbody>
 	  				<c:forEach var="event" items="${events}">
-   					<tr>
-   						<td><a href="/events/${event.id}"><c:out value="${event.name}"/></a></td>
-	   					<td><c:out value="${event.location}"/></td>
-   						<td><c:out value="${event.attendees}"/></td>
-   						<td><c:out value="${event.date}"/></td>
-   					</tr>
+   						<c:if test="${event.date == todaysDate}">
+		   					<tr>
+		   						<td><a href="/events/${event.id}"><c:out value="${event.name}"/></a></td>
+			   					<td><c:out value="${event.location}"/></td>
+		   						<td><c:out value="${event.attendees}"/></td>
+		   						<td><c:out value="${event.date}"/></td>
+		   					</tr>
+	   					</c:if>
+   				</c:forEach>
+	  			</tbody>
+	  		<!-- TODO: Scroll bar -->
+	  		</table>
+	  	</div>
+	  	
+	  	<div class="container m-auto m-2">
+	  		<table class="table table-primary table-hover table-striped d-block">
+	  			<thead>
+	  				<tr>
+	  					<th>Event Name</th>
+	  					<th>Location Name</th>
+	  					<th>Attendees</th>
+	  					<th>Date</th>
+	  				</tr>
+	  			</thead>
+	  			<tbody>
+	  				<c:forEach var="event" items="${events}">
+		  				<c:if test="${event.date != todaysDate}">
+		   					<tr>
+		   						<td><a href="/events/${event.id}"><c:out value="${event.name}"/></a></td>
+			   					<td><c:out value="${event.location}"/></td>
+		   						<td><c:out value="${event.attendees}"/></td>
+		   						<td><c:out value="${event.date}"/></td>
+		   					</tr>
+	   					</c:if>
    				</c:forEach>
 	  			</tbody>
 	  		<!-- TODO: Scroll bar -->

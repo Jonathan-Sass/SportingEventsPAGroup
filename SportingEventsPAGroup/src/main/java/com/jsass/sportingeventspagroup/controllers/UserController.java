@@ -21,7 +21,7 @@ public class UserController {
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("newUser", new User());
-        return "index.jsp"; // Logical view name
+        return "index"; // Logical view name
     }
 
     @PostMapping("/register")
