@@ -63,7 +63,7 @@
 		 				<div class="border border-primary border-2 rounded p-4">
 		 					<p class="lead text-center"><u>Attendees</u></p>
 		 					<c:forEach var ="attendee" items="${event.attendees}">
-		 						<p>${event.attendee}</p>
+		 						<p>${attendee.firstName}</p>
 		 					</c:forEach>
 		 				</div>
 	 				</div>

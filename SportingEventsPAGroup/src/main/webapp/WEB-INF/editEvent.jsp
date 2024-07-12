@@ -57,5 +57,6 @@
 	        <input type="submit" class="btn btn-primary" value="Update Event"/>
 	    </form:form>
 	</div>
+	<a href="/events/${id}/delete" class="btn btn-danger w-50">Delete</a>
 </body>
 </html>

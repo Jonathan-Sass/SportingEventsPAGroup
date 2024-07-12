@@ -78,7 +78,7 @@
 		   			<div class="my-3">
 		   				<p>Event History:</p>
 		   				<c:forEach var="event" items="${user.events}">
-			   				<c:if test="${event.date} < ${currentDate}">
+			   				<c:if test="${event.date < currentDate}">
 			   					<p>${Event.name}</p>
 			   				</c:if>
 		   				</c:forEach>
@@ -86,7 +86,7 @@
 		   			<div class="my-3">
 		   				<p>Future Events:</p>
 		   				<c:forEach var="event" items="${user.events}">
-		   					<c:if test="${event.date >= ${currentDate}">
+		   					<c:if test="${event.date >= currentDate}">
 		   						<p>${event.name}</p>
 		   					</c:if>
 		   				</c:forEach>

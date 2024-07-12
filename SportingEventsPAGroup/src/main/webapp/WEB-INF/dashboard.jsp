@@ -37,14 +37,14 @@
 	        </div>
 	    </div>
 	</nav>
-	<div class="container-fluid w-75 m-2 m-auto">
+	<div class="container-fluid w-75 p-2 m-auto">
 	    <div class="d-flex justify-content-between align-items-center">
 	        <div><h1 class="display-5">Welcome, <c:out value="${user.firstName}"/>!</h1></div>
 	        <div><a href="/users/register">logout</a></div>
 	    </div>
 	</div>
-	<div class="container-fluid w-75 m-2 m-auto">
-	    <div class="card shadow p-3 m-2">
+	<div class="container-fluid w-75 m-auto">
+	    <div class="card shadow p-3 m-3">
 	        <c:choose>
 	            <c:when test="${numTodaysEvents == 1}">
 	                <div><h4 class="display-6">Today is ${todaysDate}, you have ${numTodaysEvents} event today.</h4></div>
@@ -78,7 +78,7 @@
 			    </table>
 			</div>
 		</div>
-		<div class="card shadow p-3 m-2">
+		<div class="card shadow p-3 m-3">
 			<h4 class="display-6">Here are your future events.</h4>
 			<div class="card-body">
 			    <table class="table table-dark table-hover table-striped d-block">
