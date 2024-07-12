@@ -3,7 +3,7 @@ package com.jsass.sportingeventspagroup.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Event {
@@ -23,15 +23,19 @@ public class Event {
     private User creator;
 
     @ManyToMany
-    private List<User> attendees;
+    @JoinTable(
+        name = "event_attendees",
+        joinColumns = @JoinColumn(name = "event_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> attendees;
 
-    @OneToMany(mappedBy = "event")
-    private List<Message> messages;
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private Set<Message> messages;
 
-    private int capacity; // Add this line
+    private int capacity;
 
     // Getters and setters
-
     public Long getId() {
         return id;
     }
@@ -72,19 +76,19 @@ public class Event {
         this.creator = creator;
     }
 
-    public List<User> getAttendees() {
+    public Set<User> getAttendees() {
         return attendees;
     }
 
-    public void setAttendees(List<User> attendees) {
+    public void setAttendees(Set<User> attendees) {
         this.attendees = attendees;
     }
 
-    public List<Message> getMessages() {
+    public Set<Message> getMessages() {
         return messages;
     }
 
-    public void setMessages(List<Message> messages) {
+    public void setMessages(Set<Message> messages) {
         this.messages = messages;
     }
 

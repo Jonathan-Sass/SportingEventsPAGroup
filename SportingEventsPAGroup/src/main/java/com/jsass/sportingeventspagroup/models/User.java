@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 public class User {
@@ -33,7 +33,10 @@ public class User {
     private LocalDate birthdate;
 
     @OneToMany(mappedBy = "creator")
-    private List<Event> events;
+    private Set<Event> events;
+
+    @ManyToMany(mappedBy = "attendees")
+    private Set<Event> attendedEvents;
 
     // Getters and setters
     public Long getId() {
@@ -92,11 +95,19 @@ public class User {
         this.birthdate = birthdate;
     }
 
-    public List<Event> getEvents() {
+    public Set<Event> getEvents() {
         return events;
     }
 
-    public void setEvents(List<Event> events) {
+    public void setEvents(Set<Event> events) {
         this.events = events;
+    }
+
+    public Set<Event> getAttendedEvents() {
+        return attendedEvents;
+    }
+
+    public void setAttendedEvents(Set<Event> attendedEvents) {
+        this.attendedEvents = attendedEvents;
     }
 }

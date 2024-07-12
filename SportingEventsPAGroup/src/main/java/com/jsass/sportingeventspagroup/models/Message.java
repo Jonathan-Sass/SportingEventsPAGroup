@@ -1,6 +1,5 @@
 package com.jsass.sportingeventspagroup.models;
 
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 
@@ -19,6 +18,10 @@ public class Message {
     @ManyToOne
     private Event event;
 
+    @Transient
+    private Long eventId;
+
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -49,5 +52,13 @@ public class Message {
 
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    public Long getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(Long eventId) {
+        this.eventId = eventId;
     }
 }

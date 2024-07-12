@@ -9,8 +9,10 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.Optional;
 
 @Controller
@@ -24,21 +26,27 @@ public class MessageController {
     private EventService eventService;
 
     @PostMapping("/create")
-    public String createMessage(@RequestParam Long eventId, @ModelAttribute("message") Message message, HttpSession session) {
+    public String createMessage(@Valid @ModelAttribute("message") Message message, BindingResult result, HttpSession session, Model model) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) {
             return "redirect:/users/login";
         }
 
-        Optional<Event> event = eventService.findEventById(eventId);
+        Optional<Event> event = eventService.findEventById(message.getEventId());
         if (event.isPresent()) {
+            if (result.hasErrors()) {
+                model.addAttribute("event", event.get());
+                model.addAttribute("messageList", event.get().getMessages()); // Include messages
+                return "viewEvent"; // return to the same view with error messages
+            }
             message.setEvent(event.get());
             message.setAuthor(loggedInUser.getFirstName() + " " + loggedInUser.getLastName());
             messageService.saveMessage(message);
         }
 
-        return "redirect:/events/" + eventId;
+        return "redirect:/events/" + message.getEventId();
     }
+
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
@@ -57,7 +65,7 @@ public class MessageController {
     }
 
     @PostMapping("/{id}/update")
-    public String updateMessage(@PathVariable Long id, @ModelAttribute("message") Message message, HttpSession session) {
+    public String updateMessage(@PathVariable Long id, @Valid @ModelAttribute("message") Message message, BindingResult result, HttpSession session) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) {
             return "redirect:/users/login";
@@ -66,6 +74,9 @@ public class MessageController {
         Optional<Message> existingMessage = messageService.findMessageById(id);
         if (existingMessage.isPresent()) {
             Message updatedMessage = existingMessage.get();
+            if (result.hasErrors()) {
+                return "editMessage";
+            }
             updatedMessage.setContent(message.getContent());
             messageService.saveMessage(updatedMessage);
             return "redirect:/events/" + updatedMessage.getEvent().getId();

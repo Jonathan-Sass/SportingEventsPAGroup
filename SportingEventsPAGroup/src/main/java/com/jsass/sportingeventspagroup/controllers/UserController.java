@@ -1,17 +1,16 @@
 package com.jsass.sportingeventspagroup.controllers;
 
-import com.jsass.sportingeventspagroup.models.Event;
 import com.jsass.sportingeventspagroup.models.User;
-import com.jsass.sportingeventspagroup.services.EventService;
 import com.jsass.sportingeventspagroup.services.UserService;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
-import java.util.List;
+import jakarta.validation.Valid;
 import java.util.Optional;
 
 @Controller
@@ -19,9 +18,6 @@ import java.util.Optional;
 public class UserController {
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private EventService eventService;
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
@@ -31,11 +27,15 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("newUser") User user, Model model) {
+    public String registerUser(@Valid @ModelAttribute("newUser") User user, BindingResult result, Model model) {
         if (userService.isEmailTaken(user.getEmail())) {
-            model.addAttribute("emailError", "Email is already taken");
-            model.addAttribute("newUser", new User());
-            model.addAttribute("newLogin", new User()); // Add this line
+            result.rejectValue("email", "error.user", "Email is already taken");
+        }
+        if (!user.getPassword().equals(user.getConfirm())) {
+            result.rejectValue("confirm", "error.user", "Passwords do not match");
+        }
+        if (result.hasErrors()) {
+            model.addAttribute("newLogin", new User());
             return "index";
         }
         userService.saveUser(user);
@@ -45,33 +45,39 @@ public class UserController {
     @GetMapping("/login")
     public String showLoginForm(Model model) {
         model.addAttribute("newLogin", new User());
-        model.addAttribute("newUser", new User()); // Add this line
+        model.addAttribute("newUser", new User());
         return "index"; // Logical view name
     }
 
     @PostMapping("/login")
-    public String loginUser(@ModelAttribute("newLogin") User user, Model model, HttpSession session) {
+    public String loginUser(@Valid @ModelAttribute("newLogin") User user, BindingResult result, Model model, HttpSession session) {
         Optional<User> existingUser = userService.findUserByEmail(user.getEmail());
         if (existingUser.isPresent() && userService.checkPassword(user.getPassword(), existingUser.get().getPassword())) {
             session.setAttribute("loggedInUser", existingUser.get());
             return "redirect:/users/dashboard";
         }
-        model.addAttribute("loginError", "Invalid email or password");
-        model.addAttribute("newLogin", new User());
-        model.addAttribute("newUser", new User()); // Add this line
-        return "index";
+        result.rejectValue("email", "error.user", "Invalid email or password");
+        if (result.hasErrors()) {
+            model.addAttribute("newUser", new User());
+            return "index";
+        }
+        return "redirect:/users/dashboard";
     }
 
     @GetMapping("/dashboard")
-    public String userDashboard(HttpSession session, Model model) {
+    public String dashboard(HttpSession session, Model model) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            return "redirect:/users/login";
+        if (loggedInUser != null) {
+            Optional<User> userWithEvents = userService.findUserByEmailWithEvents(loggedInUser.getEmail());
+            if (userWithEvents.isPresent()) {
+                User user = userWithEvents.get();
+                model.addAttribute("user", user);
+                model.addAttribute("eventsCreated", user.getEvents());
+                model.addAttribute("eventsAttending", user.getAttendedEvents());
+            }
+            return "dashboard"; // Logical view name
         }
-        List<Event> events = eventService.findEventsByUser(loggedInUser);
-        model.addAttribute("user", loggedInUser);
-        model.addAttribute("events", events);
-        return "dashboard"; // Logical view name
+        return "redirect:/users/login";
     }
 
     @GetMapping("/profile")
@@ -79,8 +85,9 @@ public class UserController {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser != null) {
             model.addAttribute("user", loggedInUser);
+            return "userAccount"; // Logical view name
         }
-        return "userAccount"; // Logical view name
+        return "redirect:/users/login";
     }
 
     @GetMapping("/edit")
@@ -88,29 +95,32 @@ public class UserController {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser != null) {
             model.addAttribute("user", loggedInUser);
+            return "editUser"; // Logical view name
         }
-        return "editUser"; // Logical view name
+        return "redirect:/users/login";
     }
 
     @PostMapping("/update")
-    public String updateUser(@ModelAttribute("user") User user, HttpSession session) {
+    public String updateUser(@Valid @ModelAttribute("user") User user, BindingResult result, HttpSession session) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser != null) {
-            Optional<User> existingUser = userService.findUserByEmail(loggedInUser.getEmail());
-            existingUser.ifPresent(value -> {
-                value.setFirstName(user.getFirstName());
-                value.setLastName(user.getLastName());
-                value.setBirthdate(user.getBirthdate());
-                // If the password is being updated, hash it before saving
-                if (!user.getPassword().isEmpty()) {
-                    value.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
-                }
-                userService.saveUser(value);
-                session.setAttribute("loggedInUser", value);
-            });
+            if (result.hasErrors()) {
+                return "editUser";
+            }
+            loggedInUser.setFirstName(user.getFirstName());
+            loggedInUser.setLastName(user.getLastName());
+            loggedInUser.setBirthdate(user.getBirthdate());
+            if (!user.getPassword().isEmpty()) {
+                loggedInUser.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
+            }
+            userService.saveUser(loggedInUser);
         }
         return "redirect:/users/profile";
     }
 
-    // Additional methods can go here
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/users/login";
+    }
 }
