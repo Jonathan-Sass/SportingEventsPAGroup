@@ -1,4 +1,5 @@
 package com.jsass.sportingeventspagroup.models;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
@@ -26,6 +27,10 @@ public class Event {
 
     @OneToMany(mappedBy = "event")
     private List<Message> messages;
+
+    private int capacity; // Add this line
+
+    // Getters and setters
 
     public Long getId() {
         return id;
@@ -81,5 +86,13 @@ public class Event {
 
     public void setMessages(List<Message> messages) {
         this.messages = messages;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 }

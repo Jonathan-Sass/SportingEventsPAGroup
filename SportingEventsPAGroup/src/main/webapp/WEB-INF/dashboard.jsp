@@ -40,7 +40,7 @@
 <div class="container  m-2 m-auto">
     <div class="d-flex justify-content-between align-items-center">
         <div><h1>Welcome, <c:out value="${user.firstName}"/>!</h1></div>
-        <div><a href="/users/logout">logout</a></div>
+        <div><a href="/users/register">logout</a></div>
     </div>
     <div class="d-flex justify-content-between align-items-center">
         <c:choose>

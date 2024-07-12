@@ -19,22 +19,34 @@ public class EventController {
     private EventService eventService;
 
     @GetMapping
-    public String listEvents(Model model) {
+    public String listEvents(Model model, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return "redirect:/users/login";
+        }
         model.addAttribute("events", eventService.findAllEvents());
         return "search";
     }
 
     @GetMapping("/{id}")
-    public String viewEvent(@PathVariable Long id, Model model) {
+    public String viewEvent(@PathVariable Long id, Model model, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return "redirect:/users/login";
+        }
         Optional<Event> event = eventService.findEventById(id);
         event.ifPresent(value -> model.addAttribute("event", value));
         return "viewEvent";
     }
 
     @GetMapping("/new")
-    public String showEventForm(Model model) {
+    public String showEventForm(Model model, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return "redirect:/users/login";
+        }
         model.addAttribute("event", new Event());
-        return "createEvent"; // Ensure this matches your view name
+        return "createEvent";
     }
 
     @PostMapping("/create")
@@ -43,12 +55,17 @@ public class EventController {
         if (loggedInUser != null) {
             event.setCreator(loggedInUser);
             eventService.saveEvent(event);
+            return "redirect:/users/dashboard"; // Redirect to user's dashboard
         }
-        return "redirect:/events";
+        return "redirect:/users/login";
     }
 
     @GetMapping("/{id}/edit")
-    public String showEditForm(@PathVariable Long id, Model model) {
+    public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return "redirect:/users/login";
+        }
         Optional<Event> event = eventService.findEventById(id);
         event.ifPresent(value -> model.addAttribute("event", value));
         return "editEvent";
@@ -70,7 +87,11 @@ public class EventController {
     }
 
     @GetMapping("/{id}/delete")
-    public String deleteEvent(@PathVariable Long id) {
+    public String deleteEvent(@PathVariable Long id, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return "redirect:/users/login";
+        }
         eventService.deleteEventById(id);
         return "redirect:/events";
     }
@@ -78,6 +99,9 @@ public class EventController {
     @GetMapping("/{id}/join")
     public String joinEvent(@PathVariable Long id, HttpSession session) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return "redirect:/users/login";
+        }
         Optional<Event> event = eventService.findEventById(id);
         if (loggedInUser != null && event.isPresent()) {
             Event currentEvent = event.get();
