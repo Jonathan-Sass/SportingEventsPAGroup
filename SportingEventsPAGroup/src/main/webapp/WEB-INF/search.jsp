@@ -12,32 +12,44 @@
     <script type="text/javascript" src="/js/app.js"></script>
 </head>
 <body>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">New</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Search</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-            </li>
-        </ul>
-    </div>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+	    <div class="container-fluid px-4">
+	        <div class="d-flex"><a class="navbar-brand text-primary" href="/users/dashboard">iSport</a></div>
+	        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+	                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+	            <span class="navbar-toggler-icon"></span>
+	        </button>
+	        <div class="collapse navbar-collapse" id="navbarNav">
+	            <ul class="navbar-nav">
+	                <li class="nav-item">
+	                    <a class="nav-link active" aria-current="page" href="/users/dashboard">Home</a>
+	                </li>
+	                <li class="nav-item">
+	                    <a class="nav-link" href="/events/new">New</a>
+	                </li>
+	                <li class="nav-item">
+	                    <a class="nav-link" href="/events/search">Search</a>
+	                </li>
+	              	<li class="nav-item">
+	                    <a class="nav-link" href="/users/profile">Account</a>
+	                </li>
+	            </ul>
+	        </div>
+	    </div>
+    </nav>
     <div class="container m-2 m-auto">
         <div class="d-flex justify-content-between align-items-center">
             <form action="/search/submit" method="post">
-                <div class="form-floating d-flex">
+                <div class="form-floating">
                     <input type="text" class="form-control" name="search-input" id="search-input"/>
                     <label for="search-input" class="form-label">Search</label>
                 </div>
-                <div class="d-flex">
+                <div>
                     <h6>Search by:</h6>
                     <select>
+                    	<option value="searchName">Name</option>
+                    	<option value="searchLocation">Location</option>
+                    	<option value="searchDate">Date</option>
                     </select>
                 </div>
                 <input type="submit" class="btn btn-primary btn-sm" value="Submit"/>

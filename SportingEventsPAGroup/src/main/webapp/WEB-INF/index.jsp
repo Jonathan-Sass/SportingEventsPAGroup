@@ -15,15 +15,15 @@
 </head>
 <body>
 <div class="container w-75 m-auto">
-    <div class="m-2">
-        <h1 class="text-primary">iSport</h1>
-        <h4>Free Pickup Game Finder and Organizer</h4>
+    <div class="m-2 text-center">
+        <h1 class="text-primary display-3">iSport</h1>
+        <h4 class="display-6">Free Pickup Game Finder and Organizer</h4>
     </div>
 </div>
 <div class="container w-75 m-auto d-flex justify-content-evenly">
-    <div class="card shadow p-2 m-2">
+    <div class="card shadow p-2 m-auto">
+            <h4 class="display-6 text-primary text-center">Register</h4>
         <div class="card-body forms">
-            <h4>Register</h4>
             <form:form action="/users/register" method="post" modelAttribute="newUser">
                 <p>
                     <form:label path="firstName">First Name:</form:label>
@@ -59,9 +59,9 @@
             </form:form>
         </div>
     </div>
-    <div class="card shadow p-2 m-2">
+    <div class="card shadow p-2 m-auto">
+            <h4 class="display-6 text-primary text-center">Login</h4>
         <div class="card-body forms">
-            <h4>Login</h4>
             <form:form action="/users/login" method="post" modelAttribute="newLogin">
                 <p>
                     <form:label path="email">Email:</form:label>
